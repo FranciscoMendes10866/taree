@@ -1,41 +1,73 @@
 <template>
   <div>
-    <Navbar />
-    <h1>{{ firstAPI }}</h1>
-    <h1>{{ secondAPI }}</h1>
+    <section class="hero has-background-white-ter is-fullheight">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns" v-if="!state.firstAPI || !state.secondAPI">
+            <div class="column">
+              <div class="card has-background-danger">
+                <div class="card-content has-text-centered">
+                  <p class="title has-text-white">
+                    One of the API's is not working properly.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="columns" v-else>
+            <div class="column">
+              <div class="card has-background-success">
+                <div class="card-content">
+                  <p class="title has-text-white">
+                    {{ state.firstAPI }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="card has-background-success">
+                <div class="card-content">
+                  <p class="title has-text-white">
+                    {{ state.secondAPI }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, onMounted, reactive } from "vue";
 import axios from "axios";
-import Navbar from "./components/Navbar.vue";
 
 export default defineComponent({
-  name: "App",
-  components: {
-    Navbar
-  },
   setup() {
     // init state
-    const firstAPI = ref({})
-    const secondAPI = ref({})
+    const state = reactive({
+      firstAPI: null,
+      secondAPI: null
+    });
     // http request
-    async function fetchAPIS() {
-      await axios.get('http://localhost:8538')
-        .then((res) => {
-          firstAPI.value = res.data
-        })
-      await axios.get('http://localhost:6518')
-        .then((res) => {
-          secondAPI.value = res.data
-        })
+    async function Fetch() {
+      await axios.get("http://localhost:8538").then(res => {
+        state.firstAPI = res.data;
+      });
+      await axios.get("http://localhost:6518").then(res => {
+        state.secondAPI = res.data;
+      });
     }
     // when the page mounts
-    onMounted(fetchAPIS)
+    onMounted(Fetch);
+    // returns the state (to be used by the template)
+    // and returns the Fetch function
     return {
-      fetchAPIS
-    }
+      state,
+      Fetch
+    };
   }
 });
 </script>
