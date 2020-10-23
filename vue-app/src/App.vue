@@ -53,10 +53,10 @@ export default defineComponent({
     });
     // http request
     async function Fetch() {
-      await axios.get("http://localhost:8538").then(res => {
+      await axios.get("http://localhost/first-api").then(res => {
         state.firstAPI = res.data;
       });
-      await axios.get("http://localhost:6518").then(res => {
+      await axios.get("http://localhost/second-api").then(res => {
         state.secondAPI = res.data;
       });
     }
