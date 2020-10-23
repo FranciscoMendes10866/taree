@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Proxies requests to internal services
+  reverse-proxy:
+    image: nginx:1.19.3-alpine
+    container_name: nginx_reverse_proxy
+    depends_on:
+        - vue-app
+        - first-api
+        - second-api
+    volumes:
+      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+  # Frontend - Vue Project
+  vue-app:
+    image: vue-app
+    container_name: vue-app
+    build:
+      context: ./vue-app
+    depends_on:
+        - first-api
+        - second-api
+    ports:
+      - 8080:80
+    restart: on-failure
+  # First GO Fiber Api
+  first-api:
+    image: first-api
+    container_name: first-api
+    build:
+      context: ./api-01
+    ports:
+      - 8538:8538
+    restart: on-failure
+  # Second GO Fiber Api
+  second-api:
+    image: second-api
+    container_name: second-api
+    build:
+      context: ./api-02
+    ports:
+      - 6518:6518
+    restart: on-failure
